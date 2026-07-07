@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#17251C">
+<meta name="description" content="Dagens pussel bygger ditt rike. Samma pussel för hela världen varje dag — packa marken, skörda och bygg ett kungarike som växer medan du är borta.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:title" content="Pusselriket 🏰">
+<meta property="og:description" content="Dagens pussel bygger ditt rike — samma pussel för hela världen, varje dag.">
+<meta property="og:url" content="https://mattesj01.github.io/pusselriket/">
+<meta property="og:image" content="https://mattesj01.github.io/pusselriket/icon-512.png">
+<title>Pusselriket — dagens pussel bygger ditt rike</title>
+<style>
+/* ============ tokens: svensk allmoge i skymning ============ */
+:root{
+  --granskog:#17251C;   /* djup granskog, app-bakgrund */
+  --gran2:#213529;      /* upphöjt kort på mörkt */
+  --gran3:#2B4335;
+  --linne:#F5EBD8;      /* linneduk, spelplan */
+  --linne2:#E9DABF;     /* tom ruta */
+  --kol:#2E2418;        /* bläck på linne */
+  --falu:#963028;       /* falurött, primärknapp */
+  --falu2:#B14A3E;
+  --vete:#E8B54A;       /* veteguld, accent + lyktsken */
+  --vete2:#F4D48A;
+  --skog:#57804E; --aker:#D8A93F; --gruva:#8E8676; --hus:#B0503C;
+  --block:#4A4238;
+  --serif:'Palatino Linotype',Palatino,Georgia,'Times New Roman',serif;
+  --sans:system-ui,'Segoe UI',Roboto,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--granskog);
+  background-image:radial-gradient(120% 90% at 50% -10%, #24402F 0%, var(--granskog) 60%);
+  color:var(--linne);
+  font-family:var(--sans);
+  min-height:100vh;
+  padding-bottom:76px; /* plats för flikraden */
+}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--vete);outline-offset:2px}
+
+/* ============ sidhuvud ============ */
+header{max-width:480px;margin:0 auto;padding:18px 16px 8px;text-align:center}
+.eyebrow{
+  font-family:var(--serif);font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--vete);opacity:.9;
+}
+h1{
+  font-family:var(--serif);font-weight:700;font-size:clamp(28px,8vw,36px);
+  letter-spacing:.06em;color:var(--linne);line-height:1.1;margin-top:2px;
+}
+h1 .krona{color:var(--vete)}
+.streak{
+  display:inline-block;margin-top:6px;font-size:13px;color:var(--vete2);
+  background:var(--gran2);border:1px solid var(--gran3);border-radius:999px;padding:3px 12px;
+}
+.resurser{
+  max-width:480px;margin:10px auto 0;padding:0 16px;
+  display:flex;justify-content:center;gap:14px;flex-wrap:wrap;
+  font-variant-numeric:tabular-nums;font-size:15px;
+}
+.resurser span{background:var(--gran2);border-radius:10px;padding:4px 10px;border:1px solid var(--gran3)}
+.resurser b{color:var(--vete2);font-weight:600}
+
+/* ============ vyer ============ */
+main{max-width:480px;margin:0 auto;padding:14px 16px 24px}
+.vy{display:none}
+.vy.aktiv{display:block}
+
+/* ============ spelplanen: dagens mark ============ */
+.plan-ram{
+  background:var(--linne);border-radius:18px;padding:10px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px #d9c8a6;
+}
+.plan-titel{
+  font-family:var(--serif);color:var(--kol);text-align:center;
+  font-size:14px;letter-spacing:.14em;text-transform:uppercase;padding:2px 0 8px;
+}
+#plan{
+  display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(7,1fr);gap:4px;
+  aspect-ratio:1; /* kvadraten sitter på planen, inte cellerna — annars växer griden ur skärmen */
+  touch-action:none;user-select:none;-webkit-user-select:none;
+}
+.cell{
+  min-width:0;min-height:0;border-radius:6px;background:var(--linne2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(14px,4.5vw,22px);
+  box-shadow:inset 0 -2px 0 rgba(0,0,0,.06);
+  transition:background .12s;
+}
+.cell.blockerad{background:var(--block);box-shadow:inset 0 2px 4px rgba(0,0,0,.4)}
+.cell.t-s{background:var(--skog)} .cell.t-a{background:var(--aker)}
+.cell.t-g{background:var(--gruva)} .cell.t-h{background:var(--hus)}
+.cell.ny{animation:landa .25s ease-out}
+@keyframes landa{from{transform:scale(.6)}to{transform:scale(1)}}
+/* lyktskenet: giltig plats lyser varmt, ogiltig kallnar */
+.cell.ghost-ok{background:var(--vete2);box-shadow:0 0 12px 2px rgba(232,181,74,.8),inset 0 0 0 2px var(--vete)}
+.cell.ghost-nej{background:#B7AB94;opacity:.6}
+
+/* ============ bitbrickan ============ */
+.bricka{margin-top:14px;display:flex;gap:10px;align-items:stretch}
+.bit-kort{
+  min-width:0;overflow:hidden;
+  background:var(--gran2);border:1px solid var(--gran3);border-radius:14px;
+  padding:10px;touch-action:none;user-select:none;-webkit-user-select:none;
+  display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--linne);
+}
+.bit-kort.aktuell{flex:1.4;border-color:var(--vete);box-shadow:0 0 0 1px var(--vete),0 6px 18px rgba(0,0,0,.3)}
+.bit-kort.nasta{flex:1;opacity:.55}
+.bit-kort .rubrik{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--vete2)}
+.bit-form{display:grid;gap:3px}
+.bit-form i{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-style:normal}
+.bit-kort.nasta .bit-form i{width:13px;height:13px;font-size:0}
+.bit-form i.tom{background:transparent}
+.bit-form i.t-s{background:var(--skog)} .bit-form i.t-a{background:var(--aker)}
+.bit-form i.t-g{background:var(--gruva)} .bit-form i.t-h{background:var(--hus)}
+.hint{margin-top:8px;text-align:center;font-size:12.5px;color:var(--linne);opacity:.65}
+.knappar{margin-top:10px;display:flex;gap:10px;justify-content:center}
+.knapp{
+  border:none;border-radius:12px;padding:12px 18px;font-size:15px;font-weight:600;color:#fff;
+  background:var(--gran3);box-shadow:0 3px 0 rgba(0,0,0,.3);
+}
+.knapp:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.knapp.primar{background:var(--falu)}
+.knapp:disabled{opacity:.4;cursor:not-allowed}
+.notis{
+  margin-top:10px;text-align:center;font-size:13px;color:var(--vete2);min-height:18px;
+}
+
+/* ============ resultatkort ============ */
+.slut{background:var(--gran2);border:1px solid var(--vete);border-radius:16px;padding:16px;margin-top:14px;text-align:center}
+.slut h2{font-family:var(--serif);font-size:20px;letter-spacing:.04em;color:var(--vete2)}
+.slut .rader{margin:10px 0;font-size:15px;line-height:1.7;font-variant-numeric:tabular-nums}
+.slut .poang{font-family:var(--serif);font-size:26px;color:var(--vete)}
+
+/* ============ riket ============ */
+.rike-scen{
+  background:linear-gradient(180deg,#4E7A46,#3E6238);border-radius:18px;padding:18px 12px;
+  text-align:center;font-size:26px;line-height:1.5;letter-spacing:2px;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);min-height:86px;
+  overflow-wrap:anywhere;
+}
+.guld-rad{text-align:center;margin:14px 0 4px;font-variant-numeric:tabular-nums}
+.guld-rad .summa{font-family:var(--serif);font-size:34px;color:var(--vete)}
+.guld-rad .takt{font-size:13px;opacity:.75}
+.borta{
+  background:var(--gran2);border:1px solid var(--vete);border-radius:12px;
+  padding:10px 14px;margin:10px 0;text-align:center;font-size:14px;color:var(--vete2);
+}
+.byggnad{
+  background:var(--gran2);border:1px solid var(--gran3);border-radius:14px;
+  padding:12px 14px;margin-top:10px;display:flex;align-items:center;gap:12px;
+}
+.byggnad .ikon{font-size:30px}
+.byggnad .info{flex:1;min-width:0}
+.byggnad .namn{font-weight:600;font-size:15px}
+.byggnad .meta{font-size:12.5px;opacity:.75;margin-top:2px}
+.byggnad .kostnad{font-size:12.5px;margin-top:4px;font-variant-numeric:tabular-nums}
+.byggnad .kostnad .saknas{color:#E88;font-weight:600}
+.byggnad .knapp{padding:10px 14px;font-size:14px;flex-shrink:0}
+.rike-fot{margin-top:14px;text-align:center;font-size:12.5px;opacity:.6;line-height:1.6}
+
+/* ============ flikar ============ */
+nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:20;
+  background:rgba(18,28,22,.96);border-top:1px solid var(--gran3);
+  display:flex;max-width:480px;margin:0 auto;left:50%;transform:translateX(-50%);width:100%;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+nav button{
+  flex:1;background:none;border:none;color:var(--linne);opacity:.55;
+  font-size:13px;padding:10px 0 12px;display:flex;flex-direction:column;gap:2px;align-items:center;
+}
+nav button .em{font-size:20px}
+nav button[aria-pressed="true"]{opacity:1;color:var(--vete2)}
+.badge{
+  position:absolute;margin-left:34px;margin-top:-2px;background:var(--falu);color:#fff;
+  border-radius:999px;font-size:10px;padding:1px 6px;font-weight:700;
+}
+
+/* ============ hjälp ============ */
+#hjalp{
+  position:fixed;inset:0;z-index:40;background:rgba(13,20,16,.82);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+#hjalp[hidden]{display:none}
+.hjalp-kort{
+  background:var(--linne);color:var(--kol);border-radius:18px;padding:22px 20px 18px;
+  max-width:420px;box-shadow:0 16px 48px rgba(0,0,0,.5);
+}
+.hjalp-kort h2{font-family:var(--serif);font-size:22px;letter-spacing:.04em;text-align:center;margin-bottom:12px}
+.hjalp-kort p{font-size:14.5px;line-height:1.5;margin-bottom:9px}
+.hjalp-kort .knappar{margin-top:14px}
+.hjalp-knapp{
+  background:var(--gran2);border:1px solid var(--gran3);color:var(--vete2);
+  border-radius:999px;width:27px;height:27px;font-size:14px;font-weight:700;
+  vertical-align:middle;margin-left:6px;
+}
+.stod[hidden]{display:none}
+.stod{
+  display:block;text-align:center;margin-top:14px;padding:12px;
+  background:var(--gran2);border:1px solid var(--gran3);border-radius:14px;
+  color:var(--vete2);text-decoration:none;font-size:14px;
+}
+
+/* ============ toast ============ */
+#toast{
+  position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:30;
+  background:var(--linne);color:var(--kol);border-radius:12px;padding:10px 18px;
+  font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+#toast.syns{opacity:1}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow" id="dagrad">Dag 1 · 6 juli</div>
+  <h1>Pusselriket <span class="krona">🏰</span></h1>
+  <span class="streak" id="streak">🔥 0 dagar i rad</span><button class="hjalp-knapp" id="btn-hjalp" aria-label="Så spelar du">?</button>
+  <div class="resurser" aria-label="Dina resurser">
+    <span>🌲 <b id="r-tra">0</b></span>
+    <span>🌾 <b id="r-mat">0</b></span>
+    <span>🪨 <b id="r-sten">0</b></span>
+    <span>💰 <b id="r-guld">0</b></span>
+  </div>
+</header>
+
+<main>
+  <!-- ============ VY: dagens pussel ============ -->
+  <section class="vy" id="vy-pussel">
+    <div class="plan-ram">
+      <div class="plan-titel">Dagens mark — samma för alla</div>
+      <div id="plan" aria-label="Spelplan, 7 gånger 7 rutor"></div>
+    </div>
+
+    <div id="spel-ui">
+      <div class="bricka" id="bricka"></div>
+      <p class="hint">Tryck på biten för att rotera · dra ut den på marken</p>
+      <div class="knappar">
+        <button class="knapp" id="btn-rotera">↻ Rotera</button>
+        <button class="knapp" id="btn-slang">✕ Släng (<span id="slang-kvar">2</span> kvar)</button>
+      </div>
+      <p class="notis" id="notis" aria-live="polite"></p>
+    </div>
+
+    <div class="slut" id="slut" hidden>
+      <h2>🌅 Dagens skörd</h2>
+      <div class="rader" id="slut-rader"></div>
+      <div class="poang" id="slut-poang"></div>
+      <div class="knappar">
+        <button class="knapp primar" id="btn-dela">📋 Dela resultat</button>
+        <button class="knapp" id="btn-till-riket">Till riket →</button>
+      </div>
+      <p class="hint">Ny mark väntar imorgon.</p>
+    </div>
+  </section>
+
+  <!-- ============ VY: riket ============ -->
+  <section class="vy" id="vy-rike">
+    <div class="rike-scen" id="scen"></div>
+    <div class="guld-rad">
+      <div class="summa">💰 <span id="guld-stor">0</span></div>
+      <div class="takt" id="guld-takt">+0 guld/min</div>
+    </div>
+    <div class="borta" id="borta" hidden></div>
+    <div id="byggnader"></div>
+    <a class="stod" id="stod" hidden target="_blank" rel="noopener">☕ Gillar du Pusselriket? Stöd bygget!</a>
+    <p class="rike-fot">Riket arbetar medan du är borta (upp till 12 timmar).<br>
+    Trä, mat och sten skördar du i dagens pussel.</p>
+  </section>
+</main>
+
+<nav aria-label="Flikar">
+  <button id="flik-pussel" aria-pressed="true"><span class="em">🧩</span>Dagens pussel</button>
+  <button id="flik-rike" aria-pressed="false"><span class="em">🏰</span>Riket<span class="badge" id="rike-badge" hidden>!</span></button>
+</nav>
+
+<div id="hjalp" hidden>
+  <div class="hjalp-kort">
+    <h2>Så spelar du 🏰</h2>
+    <p>🧩 Varje dag får hela världen <b>samma mark och samma bitar</b>. Packa in så många du kan — fulla rader och kolumner ger extra guld.</p>
+    <p>👆 <b>Tryck</b> på biten för att rotera den · <b>dra</b> ut den på marken för att bygga.</p>
+    <p>🌾 Skörden blir trä, mat, sten och guld som bygger ditt rike — och riket arbetar vidare <b>medan du är borta</b>.</p>
+    <p>🔥 Kom tillbaka imorgon: ny mark åt alla, och din svit växer.</p>
+    <div class="knappar"><button class="knapp primar" id="btn-hjalp-stang">Till dagens mark →</button></div>
+  </div>
+</div>
+
+<noscript><p style="text-align:center;padding:20px">Pusselriket behöver JavaScript för att fungera.</p></noscript>
+
+<div id="toast" role="status"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   Pusselriket — dagens pussel (samma för alla, fröat ur datumet)
+   bygger ditt bestående rike som producerar guld medan du är borta.
+   Balansrattar samlade här: skruva fritt.
+   ===================================================================== */
+const START_DATUM = '2026-07-06';   // dag 1
+const PLAN_N = 7;                    // spelplan 7×7
+const ANTAL_BLOCK = 6;               // stenrösen per dag
+const ANTAL_BITAR = 11;              // bitar i dagens kö
+const ANTAL_SLANG = 2;               // frivilliga släng per dag
+const GULD_PER_HUS = 3;              // guld per husruta
+const GULD_PER_LINJE = 2;            // guld per full rad/kolumn
+const OFFLINE_TAK_MIN = 12 * 60;     // max offlineskörd i minuter
+const STOD_URL = '';                 // donationslänk (Ko-fi/itch) — tom sträng döljer knappen i riket
+
+const BYGGNADER = {
+  torp:  {emoji:'🏡', namn:'Torp',      rate:1,  bas:{tra:8, mat:6},            guldBas:0},
+  bageri:{emoji:'🍞', namn:'Bageri',    rate:2,  bas:{mat:14, tra:6},           guldBas:30},
+  brott: {emoji:'⛏️', namn:'Stenbrott', rate:3,  bas:{sten:12, tra:8},          guldBas:60},
+  slott: {emoji:'🏰', namn:'Slott',     rate:10, bas:{tra:18, mat:18, sten:18}, guldBas:400},
+};
+const KOSTNAD_VAXT = 1.6, GULD_VAXT = 1.9;
+
+/* Bitformer som [rad,kol]-offsets. Roteras 90° i spelet. */
+const FORMER = [
+  [[0,0]],
+  [[0,0],[0,1]],
+  [[0,0],[0,1],[0,2]],
+  [[0,0],[1,0],[1,1]],
+  [[0,0],[0,1],[1,0],[1,1]],
+  [[0,0],[0,1],[0,2],[0,3]],
+  [[0,0],[0,1],[0,2],[1,1]],
+  [[0,1],[0,2],[1,0],[1,1]],
+  [[0,0],[0,1],[1,1],[1,2]],
+  [[0,0],[1,0],[2,0],[2,1]],
+  [[0,1],[1,1],[2,1],[2,0]],
+];
+const TYPER = {
+  s:{namn:'Skog',  em:'🌲', resurs:'tra'},
+  a:{namn:'Åker',  em:'🌾', resurs:'mat'},
+  g:{namn:'Gruva', em:'🪨', resurs:'sten'},
+  h:{namn:'By',    em:'🏠', resurs:null},   // ger guld direkt
+};
+const RES_EM = {tra:'🌲', mat:'🌾', sten:'🪨'};
+const MANADER = ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
+
+/* ---------- fröad slump: samma datum ⇒ samma pussel för alla ---------- */
+function xmur3(str){
+  let h = 1779033703 ^ str.length;
+  for (let i = 0; i < str.length; i++){
+    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+    h = (h << 13) | (h >>> 19);
+  }
+  return () => {
+    h = Math.imul(h ^ (h >>> 16), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return (h ^= h >>> 16) >>> 0;
+  };
+}
+function mulberry32(a){
+  return () => {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function idagStr(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function dagNummer(datum){
+  return Math.round((Date.parse(datum) - Date.parse(START_DATUM)) / 86400000) + 1;
+}
+function gardagStr(datum){
+  const d = new Date(Date.parse(datum) - 86400000);
+  return d.toISOString().slice(0,10);
+}
+
+/* ---------- dagens pussel ur fröet ---------- */
+function genereraDag(datum){
+  const rnd = mulberry32(xmur3('pusselriket-' + datum)());
+  // ponytail: stenarna slumpas fritt utan spelbarhetskontroll — samma för
+  // alla ändå; lägg till kontroll om en dag visar sig ospelbar.
+  const block = new Set();
+  while (block.size < ANTAL_BLOCK) block.add(Math.floor(rnd() * PLAN_N * PLAN_N));
+  // typbalanserad kö: minst 3 av varje resurs, resten slump (hus-chans) — annars
+  // kan en dag sakna t.ex. skog och ingen har råd att bygga något alls
+  const typer = ['s','s','s','a','a','a','g','g','g'];
+  while (typer.length < ANTAL_BITAR){
+    const t = rnd();
+    typer.push(t < .5 ? 'h' : t < .67 ? 's' : t < .84 ? 'a' : 'g');
+  }
+  for (let i = typer.length - 1; i > 0; i--){
+    const j = Math.floor(rnd() * (i + 1));
+    [typer[i], typer[j]] = [typer[j], typer[i]];
+  }
+  const bitar = typer.map(typ => ({form: Math.floor(rnd() * FORMER.length), typ}));
+  return {block:[...block].sort((x,y)=>x-y), bitar};
+}
+
+/* ---------- geometri ---------- */
+function rotera(celler){
+  const maxR = Math.max(...celler.map(c => c[0]));
+  const rot = celler.map(([r,c]) => [c, maxR - r]);
+  const minR = Math.min(...rot.map(c => c[0])), minC = Math.min(...rot.map(c => c[1]));
+  return rot.map(([r,c]) => [r - minR, c - minC]).sort((p,q) => p[0]-q[0] || p[1]-q[1]);
+}
+function formVid(bit){
+  let f = FORMER[bit.form];
+  for (let i = 0; i < (bit.rot || 0) % 4; i++) f = rotera(f);
+  return f;
+}
+function kanPlacera(plan, celler, ar, ac){
+  return celler.every(([r,c]) => {
+    const rr = ar + r, cc = ac + c;
+    return rr >= 0 && rr < PLAN_N && cc >= 0 && cc < PLAN_N && plan[rr * PLAN_N + cc] === '.';
+  });
+}
+function farPlatsNagonstans(plan, bit){
+  let f = FORMER[bit.form];
+  for (let rot = 0; rot < 4; rot++){
+    for (let r = 0; r < PLAN_N; r++)
+      for (let c = 0; c < PLAN_N; c++)
+        if (kanPlacera(plan, f, r, c)) return true;
+    f = rotera(f);
+  }
+  return false;
+}
+function raknaLinjer(plan){
+  let n = 0;
+  for (let i = 0; i < PLAN_N; i++){
+    let radFull = true, kolFull = true;
+    for (let j = 0; j < PLAN_N; j++){
+      if (plan[i * PLAN_N + j] === '.') radFull = false;
+      if (plan[j * PLAN_N + i] === '.') kolFull = false;
+    }
+    if (radFull) n++;
+    if (kolFull) n++;
+  }
+  return n;
+}
+
+/* ---------- tillstånd ---------- */
+const NYCKEL = 'pusselriket';
+let S; // hela speltillståndet
+function nyttRike(){
+  // startförråd: dag 1 ska alltid räcka till första torpet
+  return {guld:0, res:{tra:5, mat:5, sten:5}, byggnader:{torp:0, bageri:0, brott:0, slott:0},
+          lastSeen:Date.now(), streak:0, senastSpelad:null};
+}
+function nyDag(datum){
+  const g = genereraDag(datum);
+  const plan = Array(PLAN_N * PLAN_N).fill('.');
+  g.block.forEach(i => plan[i] = 'X');
+  return {datum, plan, bitar:g.bitar, idx:0, slangKvar:ANTAL_SLANG, klar:false, skord:null, hoppade:0};
+}
+function ladda(){
+  let sparat = null;
+  try { sparat = JSON.parse(localStorage.getItem(NYCKEL)); } catch(e){}
+  S = sparat && sparat.v === 1 ? sparat : {v:1, rike:nyttRike(), dag:null};
+  const idag = idagStr();
+  if (!S.dag || S.dag.datum !== idag){
+    if (S.rike.senastSpelad && S.rike.senastSpelad !== idag && S.rike.senastSpelad !== gardagStr(idag)){
+      S.rike.streak = 0; // missade en dag
+    }
+    S.dag = nyDag(idag);
+  }
+}
+function spara(){
+  S.rike.lastSeen = Date.now();
+  try { localStorage.setItem(NYCKEL, JSON.stringify(S)); } catch(e){}
+}
+
+/* ---------- riket: produktion ---------- */
+function guldPerMin(){
+  return Object.entries(S.rike.byggnader).reduce((sum,[k,lvl]) => sum + BYGGNADER[k].rate * lvl, 0);
+}
+function kostnad(k){
+  const lvl = S.rike.byggnader[k], b = BYGGNADER[k];
+  const res = {};
+  for (const [r, v] of Object.entries(b.bas)) res[r] = Math.ceil(v * Math.pow(KOSTNAD_VAXT, lvl));
+  const guld = lvl === 0 ? b.guldBas : Math.ceil(Math.max(b.guldBas, 20) * Math.pow(GULD_VAXT, lvl));
+  return {res, guld};
+}
+function harRad(k){
+  const p = kostnad(k);
+  return S.rike.guld >= p.guld && Object.entries(p.res).every(([r,v]) => S.rike.res[r] >= v);
+}
+function uppgradera(k){
+  if (!harRad(k)) return;
+  const p = kostnad(k);
+  S.rike.guld -= p.guld;
+  for (const [r,v] of Object.entries(p.res)) S.rike.res[r] -= v;
+  S.rike.byggnader[k]++;
+  spara(); ritaAllt();
+  toast(BYGGNADER[k].emoji + ' ' + BYGGNADER[k].namn + ' → nivå ' + S.rike.byggnader[k]);
+}
+function offlineSkord(){
+  const min = Math.min((Date.now() - S.rike.lastSeen) / 60000, OFFLINE_TAK_MIN);
+  const takt = guldPerMin();
+  if (min > 1 && takt > 0){
+    const vinst = Math.floor(min * takt);
+    S.rike.guld += vinst;
+    const el = document.getElementById('borta');
+    el.hidden = false;
+    el.textContent = '🌙 Medan du var borta: +' + vinst + ' 💰 (' + Math.floor(min) + ' min)';
+  }
+}
+
+/* ---------- rendering ---------- */
+const $ = id => document.getElementById(id);
+const planEl = $('plan');
+let cellEl = [];
+
+function byggPlan(){
+  planEl.innerHTML = '';
+  cellEl = [];
+  for (let i = 0; i < PLAN_N * PLAN_N; i++){
+    const d = document.createElement('div');
+    d.className = 'cell';
+    planEl.appendChild(d);
+    cellEl.push(d);
+  }
+}
+function ritaPlan(ghost){
+  const p = S.dag.plan;
+  for (let i = 0; i < p.length; i++){
+    const d = cellEl[i], v = p[i];
+    d.className = 'cell' + (v === 'X' ? ' blockerad' : v !== '.' ? ' t-' + v : '');
+    d.textContent = v === 'X' ? '🪨' : (v !== '.' ? TYPER[v].em : '');
+    if (ghost && ghost.celler.includes(i)){
+      d.classList.add(ghost.ok ? 'ghost-ok' : 'ghost-nej');
+      if (v === '.') d.textContent = TYPER[aktuellBit().typ].em;
+    }
+  }
+}
+function aktuellBit(){ return S.dag.bitar[S.dag.idx]; }
+
+function ritaBricka(){
+  const b = $('bricka');
+  b.innerHTML = '';
+  if (S.dag.klar) return;
+  for (let i = S.dag.idx; i < Math.min(S.dag.idx + 3, S.dag.bitar.length); i++){
+    const bit = S.dag.bitar[i];
+    const kort = document.createElement('div');
+    kort.className = 'bit-kort ' + (i === S.dag.idx ? 'aktuell' : 'nasta');
+    kort.innerHTML = '<span class="rubrik">' + (i === S.dag.idx
+      ? TYPER[bit.typ].em + ' ' + TYPER[bit.typ].namn
+      : 'sedan') + '</span>';
+    const f = i === S.dag.idx ? formVid(bit) : FORMER[bit.form];
+    const maxR = Math.max(...f.map(c=>c[0])) + 1, maxC = Math.max(...f.map(c=>c[1])) + 1;
+    const grid = document.createElement('div');
+    grid.className = 'bit-form';
+    grid.style.gridTemplateColumns = 'repeat(' + maxC + ',auto)';
+    const fyllda = new Set(f.map(([r,c]) => r + ',' + c));
+    for (let r = 0; r < maxR; r++)
+      for (let c = 0; c < maxC; c++){
+        const cell = document.createElement('i');
+        cell.className = fyllda.has(r + ',' + c) ? 't-' + bit.typ : 'tom';
+        grid.appendChild(cell);
+      }
+    kort.appendChild(grid);
+    if (i === S.dag.idx){
+      kort.id = 'aktuell-bit';
+      const antal = document.createElement('span');
+      antal.className = 'rubrik';
+      antal.textContent = 'bit ' + (i + 1) + ' av ' + S.dag.bitar.length;
+      kort.appendChild(antal);
+    }
+    b.appendChild(kort);
+  }
+}
+function ritaResurser(){
+  $('r-tra').textContent = S.rike.res.tra;
+  $('r-mat').textContent = S.rike.res.mat;
+  $('r-sten').textContent = S.rike.res.sten;
+  $('r-guld').textContent = Math.floor(S.rike.guld);
+  $('guld-stor').textContent = Math.floor(S.rike.guld);
+  $('guld-takt').textContent = '+' + guldPerMin() + ' guld/min';
+}
+function ritaRike(){
+  const delar = ['🌲'];
+  for (const [k, lvl] of Object.entries(S.rike.byggnader))
+    for (let i = 0; i < Math.min(lvl, 6); i++) delar.push(BYGGNADER[k].emoji);
+  delar.push('🌲');
+  $('scen').textContent = delar.length > 2 ? delar.join(' ') : '🌲 🌿 🌲   här är det tomt än   🌲 🌿 🌲';
+
+  const wrap = $('byggnader');
+  wrap.innerHTML = '';
+  for (const [k, b] of Object.entries(BYGGNADER)){
+    const lvl = S.rike.byggnader[k], p = kostnad(k);
+    const kort = document.createElement('div');
+    kort.className = 'byggnad';
+    const bitar = Object.entries(p.res).map(([r,v]) =>
+      '<span class="' + (S.rike.res[r] < v ? 'saknas' : '') + '">' + RES_EM[r] + ' ' + v + '</span>');
+    if (p.guld > 0) bitar.push('<span class="' + (S.rike.guld < p.guld ? 'saknas' : '') + '">💰 ' + p.guld + '</span>');
+    kort.innerHTML =
+      '<div class="ikon">' + b.emoji + '</div>' +
+      '<div class="info"><div class="namn">' + b.namn + ' · nivå ' + lvl + '</div>' +
+      '<div class="meta">+' + b.rate + ' 💰/min per nivå</div>' +
+      '<div class="kostnad">Nästa: ' + bitar.join(' · ') + '</div></div>';
+    const kn = document.createElement('button');
+    kn.className = 'knapp primar';
+    kn.textContent = lvl === 0 ? 'Bygg' : 'Uppgradera';
+    kn.disabled = !harRad(k);
+    kn.addEventListener('click', () => uppgradera(k));
+    kort.appendChild(kn);
+    wrap.appendChild(kort);
+  }
+  $('rike-badge').hidden = !Object.keys(BYGGNADER).some(harRad);
+}
+function ritaHuvud(){
+  const nr = dagNummer(S.dag.datum);
+  const d = new Date();
+  $('dagrad').textContent = 'Dag ' + nr + ' · ' + d.getDate() + ' ' + MANADER[d.getMonth()];
+  $('streak').textContent = '🔥 ' + S.rike.streak + (S.rike.streak === 1 ? ' dag' : ' dagar') + ' i rad';
+}
+function ritaSpelSlut(){
+  $('spel-ui').style.display = S.dag.klar ? 'none' : '';
+  $('slut').hidden = !S.dag.klar;
+  if (S.dag.klar && S.dag.skord){
+    const sk = S.dag.skord;
+    $('slut-rader').innerHTML =
+      '🌲 ' + sk.tra + ' trä · 🌾 ' + sk.mat + ' mat · 🪨 ' + sk.sten + ' sten<br>' +
+      '💰 ' + sk.guld + ' guld (' + sk.linjer + ' fulla linjer' + (sk.hus ? ', byar' : '') + ')' +
+      (S.dag.hoppade ? '<br><small>' + S.dag.hoppade + ' bitar fick inte plats</small>' : '');
+    $('slut-poang').textContent = '⭐ ' + sk.poang + ' poäng';
+  }
+  $('slang-kvar').textContent = S.dag.slangKvar;
+  $('btn-slang').disabled = S.dag.slangKvar <= 0;
+}
+function ritaAllt(){
+  ritaPlan(null); ritaBricka(); ritaResurser(); ritaRike(); ritaHuvud(); ritaSpelSlut();
+}
+
+/* ---------- spelets gång ---------- */
+function notis(text){ $('notis').textContent = text; }
+let toastTimer;
+function toast(text){
+  const t = $('toast');
+  t.textContent = text;
+  t.classList.add('syns');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('syns'), 2600);
+}
+
+function nastaBit(){
+  // hoppa automatiskt över bitar som inte får plats någonstans
+  while (S.dag.idx < S.dag.bitar.length && !farPlatsNagonstans(S.dag.plan, aktuellBit())){
+    S.dag.idx++; S.dag.hoppade++;
+    notis('En bit fick inte plats och hoppades över.');
+  }
+  if (S.dag.idx >= S.dag.bitar.length) avslutaDag();
+}
+function placera(ar, ac){
+  const bit = aktuellBit();
+  const f = formVid(bit);
+  if (!kanPlacera(S.dag.plan, f, ar, ac)) return false;
+  f.forEach(([r,c]) => S.dag.plan[(ar + r) * PLAN_N + (ac + c)] = bit.typ);
+  S.dag.idx++;
+  notis('');
+  nastaBit();
+  spara(); ritaAllt();
+  return true;
+}
+function slang(){
+  if (S.dag.klar || S.dag.slangKvar <= 0) return;
+  S.dag.slangKvar--;
+  S.dag.idx++;
+  nastaBit();
+  spara(); ritaAllt();
+}
+function roteraAktuell(){
+  if (S.dag.klar) return;
+  const bit = aktuellBit();
+  bit.rot = ((bit.rot || 0) + 1) % 4;
+  ritaBricka();
+}
+function avslutaDag(){
+  const p = S.dag.plan;
+  const sk = {tra:0, mat:0, sten:0, hus:0, celler:0};
+  for (const v of p){
+    if (v === '.' || v === 'X') continue;
+    sk.celler++;
+    const r = TYPER[v].resurs;
+    if (r) sk[r]++; else sk.hus++;
+  }
+  sk.linjer = raknaLinjer(p);
+  sk.guld = sk.hus * GULD_PER_HUS + sk.linjer * GULD_PER_LINJE;
+  sk.poang = sk.celler + 2 * sk.linjer;
+  S.dag.klar = true;
+  S.dag.skord = sk;
+  S.rike.res.tra += sk.tra; S.rike.res.mat += sk.mat; S.rike.res.sten += sk.sten;
+  S.rike.guld += sk.guld;
+  const idag = S.dag.datum;
+  S.rike.streak = S.rike.senastSpelad === gardagStr(idag) ? S.rike.streak + 1 : 1;
+  S.rike.senastSpelad = idag;
+  spara();
+}
+
+/* ---------- dela ---------- */
+function delaText(){
+  const em = {'.':'⬜','X':'⬛','s':'🟩','a':'🟨','g':'🟫','h':'🟥'};
+  let rutor = '';
+  for (let r = 0; r < PLAN_N; r++){
+    for (let c = 0; c < PLAN_N; c++) rutor += em[S.dag.plan[r * PLAN_N + c]];
+    rutor += '\n';
+  }
+  const sk = S.dag.skord;
+  return 'Pusselriket dag ' + dagNummer(S.dag.datum) + ' 🏰\n⭐ ' + sk.poang +
+    ' poäng · 🔥 ' + S.rike.streak + ' i rad\n' + rutor;
+}
+async function dela(){
+  const text = delaText();
+  try {
+    if (navigator.share){ await navigator.share({text}); return; }
+  } catch(e){ if (e.name === 'AbortError') return; }
+  try { await navigator.clipboard.writeText(text); toast('Kopierat! Klistra in var du vill.'); }
+  catch(e){ toast('Kunde inte kopiera automatiskt.'); }
+}
+
+/* ---------- pekare: dra biten till marken (eller hovra + klicka) ---------- */
+let drag = null; // {ghost:{celler,ok}}
+function cellVidPunkt(x, y, touch){
+  const rect = planEl.getBoundingClientRect();
+  const cw = rect.width / PLAN_N;
+  if (touch) y -= cw * 1.8; // lyft ovanför fingret
+  const c = Math.floor((x - rect.left) / cw), r = Math.floor((y - rect.top) / cw);
+  return {r, c, inne: r >= 0 && r < PLAN_N && c >= 0 && c < PLAN_N};
+}
+function ghostVid(x, y, touch){
+  if (S.dag.klar) return null;
+  const bit = aktuellBit();
+  if (!bit) return null;
+  const f = formVid(bit);
+  const maxR = Math.max(...f.map(v=>v[0])), maxC = Math.max(...f.map(v=>v[1]));
+  const p = cellVidPunkt(x, y, touch);
+  if (!p.inne) return null;
+  const ar = Math.max(0, Math.min(PLAN_N - 1 - maxR, p.r - (maxR >> 1)));
+  const ac = Math.max(0, Math.min(PLAN_N - 1 - maxC, p.c - (maxC >> 1)));
+  return {ar, ac,
+    celler: f.map(([r,c]) => (ar + r) * PLAN_N + (ac + c)),
+    ok: kanPlacera(S.dag.plan, f, ar, ac)};
+}
+
+function kopplaPekare(){
+  // dra från bitkortet
+  $('bricka').addEventListener('pointerdown', e => {
+    const kort = e.target.closest('#aktuell-bit');
+    if (!kort || S.dag.klar) return;
+    e.preventDefault();
+    drag = {flyttad:false, pointerId:e.pointerId, touch:e.pointerType !== 'mouse'};
+    kort.setPointerCapture(e.pointerId);
+  });
+  window.addEventListener('pointermove', e => {
+    if (drag && e.pointerId === drag.pointerId){
+      drag.flyttad = true;
+      drag.ghost = ghostVid(e.clientX, e.clientY, drag.touch);
+      ritaPlan(drag.ghost);
+    }
+  });
+  window.addEventListener('pointerup', e => {
+    if (drag && e.pointerId === drag.pointerId){
+      const g = drag.ghost, flyttad = drag.flyttad;
+      drag = null;
+      if (g && g.ok){ placera(g.ar, g.ac); return; }
+      ritaPlan(null);
+      if (!flyttad) roteraAktuell();            // tryck utan drag = rotera
+      else if (g && !g.ok) notis('Får inte plats där — stenar eller kanten i vägen.');
+    }
+  });
+  // mus: hovra över planen för förhandsvisning, klicka för att placera
+  planEl.addEventListener('pointermove', e => {
+    if (drag || S.dag.klar || e.pointerType !== 'mouse') return;
+    ritaPlan(ghostVid(e.clientX, e.clientY, false));
+  });
+  planEl.addEventListener('pointerleave', () => { if (!drag) ritaPlan(null); });
+  planEl.addEventListener('pointerdown', e => {
+    if (drag || S.dag.klar || e.pointerType !== 'mouse') return;
+    const g = ghostVid(e.clientX, e.clientY, false);
+    if (g && g.ok) placera(g.ar, g.ac);
+    else notis('Får inte plats där — stenar eller kanten i vägen.');
+  });
+}
+
+/* ---------- flikar ---------- */
+function visaVy(vilken){
+  $('vy-pussel').classList.toggle('aktiv', vilken === 'pussel');
+  $('vy-rike').classList.toggle('aktiv', vilken === 'rike');
+  $('flik-pussel').setAttribute('aria-pressed', vilken === 'pussel');
+  $('flik-rike').setAttribute('aria-pressed', vilken === 'rike');
+}
+
+/* ---------- självtest: öppna sidan med #test och läs konsolen ---------- */
+function sjalvtest(){
+  const ok = [], fel = [];
+  const t = (namn, sant) => (sant ? ok : fel).push(namn);
+  const a = genereraDag('2026-07-06'), b = genereraDag('2026-07-06'), c = genereraDag('2026-07-07');
+  t('determinism: samma datum ⇒ samma pussel', JSON.stringify(a) === JSON.stringify(b));
+  t('olika datum ⇒ olika pussel', JSON.stringify(a) !== JSON.stringify(c));
+  t('rätt antal block och bitar', a.block.length === ANTAL_BLOCK && a.bitar.length === ANTAL_BITAR);
+  let f = FORMER[6];
+  for (let i = 0; i < 4; i++) f = rotera(f);
+  t('4 rotationer ⇒ ursprungsformen', JSON.stringify(f) === JSON.stringify([...FORMER[6]].sort((p,q)=>p[0]-q[0]||p[1]-q[1])));
+  const plan = Array(49).fill('.');
+  plan[0] = 'X';
+  t('kanPlacera: nekar blockerad ruta', !kanPlacera(plan, [[0,0],[0,1]], 0, 0));
+  t('kanPlacera: nekar utanför kanten', !kanPlacera(plan, [[0,0],[0,1]], 0, 6));
+  t('kanPlacera: godkänner ledig plats', kanPlacera(plan, [[0,0],[0,1]], 1, 0));
+  const full = Array(49).fill('s');
+  full[8] = '.';
+  t('raknaLinjer: 12 av 14 när en ruta saknas', raknaLinjer(full) === 12);
+  t('offline-tak: 48h räknas som 12h', Math.min(48 * 60, OFFLINE_TAK_MIN) === 720);
+  console.log('SJÄLVTEST: ' + ok.length + '/' + (ok.length + fel.length) + ' OK' +
+    (fel.length ? ' — FEL: ' + fel.join(', ') : ''));
+  return fel.length === 0;
+}
+
+/* ---------- start ---------- */
+function start(){
+  const nySpelare = !localStorage.getItem(NYCKEL);
+  ladda();
+  byggPlan();
+  offlineSkord();
+  kopplaPekare();
+  nastaBit();          // ifall första biten inte får plats
+  ritaAllt();
+  visaVy(S.dag.klar ? 'rike' : 'pussel');
+  $('btn-rotera').addEventListener('click', roteraAktuell);
+  $('btn-slang').addEventListener('click', slang);
+  $('btn-dela').addEventListener('click', dela);
+  $('btn-till-riket').addEventListener('click', () => visaVy('rike'));
+  $('flik-pussel').addEventListener('click', () => visaVy('pussel'));
+  $('flik-rike').addEventListener('click', () => visaVy('rike'));
+  setInterval(() => {
+    S.rike.guld += guldPerMin() / 60;
+    ritaResurser();
+    if (idagStr() !== S.dag.datum) location.reload(); // ny dag ⇒ ny mark
+  }, 1000);
+  setInterval(spara, 15000);
+  window.addEventListener('pagehide', spara);
+  $('btn-hjalp').addEventListener('click', () => { $('hjalp').hidden = false; });
+  $('btn-hjalp-stang').addEventListener('click', () => { $('hjalp').hidden = true; });
+  $('hjalp').addEventListener('click', e => { if (e.target.id === 'hjalp') $('hjalp').hidden = true; });
+  if (nySpelare) $('hjalp').hidden = false;
+  if (STOD_URL){ $('stod').href = STOD_URL; $('stod').hidden = false; }
+  // PWA: offline + "lägg till på hemskärmen"; file:// klarar sig utan
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http'))
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  if (location.hash === '#test') sjalvtest();
+}
+start();
+</script>
+</body>
+</html>

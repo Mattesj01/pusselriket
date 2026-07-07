@@ -1,0 +1,17 @@
+{
+  "name": "Pusselriket",
+  "short_name": "Pusselriket",
+  "description": "Dagens pussel bygger ditt rike — samma pussel för hela världen, varje dag.",
+  "lang": "sv",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#17251C",
+  "theme_color": "#17251C",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
