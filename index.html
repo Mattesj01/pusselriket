@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#17251C">
-<meta name="description" content="Dagens pussel bygger ditt rike. Samma pussel för hela världen varje dag — packa marken, skörda och bygg ett kungarike som växer medan du är borta.">
+<meta name="description" content="Dagens pussel bygger ditt rike — samma pussel för hela världen, varje dag. A daily puzzle builds your kingdom — the same puzzle for the whole world, every day.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta property="og:title" content="Pusselriket 🏰">
-<meta property="og:description" content="Dagens pussel bygger ditt rike — samma pussel för hela världen, varje dag.">
+<meta property="og:description" content="A daily puzzle builds your kingdom — the same puzzle for the whole world, every day. Dagens pussel bygger ditt rike.">
 <meta property="og:url" content="https://mattesj01.github.io/pusselriket/">
 <meta property="og:image" content="https://mattesj01.github.io/pusselriket/icon-512.png">
 <title>Pusselriket — dagens pussel bygger ditt rike</title>
@@ -122,9 +122,9 @@ main{max-width:480px;margin:0 auto;padding:14px 16px 24px}
 .bit-form i.t-s{background:var(--skog)} .bit-form i.t-a{background:var(--aker)}
 .bit-form i.t-g{background:var(--gruva)} .bit-form i.t-h{background:var(--hus)}
 .hint{margin-top:8px;text-align:center;font-size:12.5px;color:var(--linne);opacity:.65}
-.knappar{margin-top:10px;display:flex;gap:10px;justify-content:center}
+.knappar{margin-top:10px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .knapp{
-  border:none;border-radius:12px;padding:12px 18px;font-size:15px;font-weight:600;color:#fff;
+  border:none;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:600;color:#fff;
   background:var(--gran3);box-shadow:0 3px 0 rgba(0,0,0,.3);
 }
 .knapp:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
@@ -139,6 +139,7 @@ main{max-width:480px;margin:0 auto;padding:14px 16px 24px}
 .slut h2{font-family:var(--serif);font-size:20px;letter-spacing:.04em;color:var(--vete2)}
 .slut .rader{margin:10px 0;font-size:15px;line-height:1.7;font-variant-numeric:tabular-nums}
 .slut .poang{font-family:var(--serif);font-size:26px;color:var(--vete)}
+.slut .stat{font-size:12.5px;opacity:.8;margin-top:8px;font-variant-numeric:tabular-nums}
 
 /* ============ riket ============ */
 .rike-scen{
@@ -203,6 +204,7 @@ nav button[aria-pressed="true"]{opacity:1;color:var(--vete2)}
   border-radius:999px;width:27px;height:27px;font-size:14px;font-weight:700;
   vertical-align:middle;margin-left:6px;
 }
+.hjalp-knapp.sprak{width:auto;padding:0 9px;letter-spacing:.08em;font-size:12px}
 .stod[hidden]{display:none}
 .stod{
   display:block;text-align:center;margin-top:14px;padding:12px;
@@ -228,8 +230,8 @@ nav button[aria-pressed="true"]{opacity:1;color:var(--vete2)}
 <header>
   <div class="eyebrow" id="dagrad">Dag 1 · 6 juli</div>
   <h1>Pusselriket <span class="krona">🏰</span></h1>
-  <span class="streak" id="streak">🔥 0 dagar i rad</span><button class="hjalp-knapp" id="btn-hjalp" aria-label="Så spelar du">?</button>
-  <div class="resurser" aria-label="Dina resurser">
+  <span class="streak" id="streak">🔥 0 dagar i rad</span><button class="hjalp-knapp" id="btn-hjalp" aria-label="Så spelar du">?</button><button class="hjalp-knapp sprak" id="btn-sprak" aria-label="Language">EN</button>
+  <div class="resurser" id="resurser" aria-label="Dina resurser">
     <span>🌲 <b id="r-tra">0</b></span>
     <span>🌾 <b id="r-mat">0</b></span>
     <span>🪨 <b id="r-sten">0</b></span>
@@ -241,29 +243,31 @@ nav button[aria-pressed="true"]{opacity:1;color:var(--vete2)}
   <!-- ============ VY: dagens pussel ============ -->
   <section class="vy" id="vy-pussel">
     <div class="plan-ram">
-      <div class="plan-titel">Dagens mark — samma för alla</div>
+      <div class="plan-titel" id="plan-titel">Dagens mark — samma för alla</div>
       <div id="plan" aria-label="Spelplan, 7 gånger 7 rutor"></div>
     </div>
 
     <div id="spel-ui">
       <div class="bricka" id="bricka"></div>
-      <p class="hint">Tryck på biten för att rotera · dra ut den på marken</p>
+      <p class="hint" id="hint-rad">Tryck på biten för att rotera · dra ut den på marken</p>
       <div class="knappar">
         <button class="knapp" id="btn-rotera">↻ Rotera</button>
-        <button class="knapp" id="btn-slang">✕ Släng (<span id="slang-kvar">2</span> kvar)</button>
+        <button class="knapp" id="btn-angra">↶ Ångra</button>
+        <button class="knapp" id="btn-slang">✕ Släng (2)</button>
       </div>
       <p class="notis" id="notis" aria-live="polite"></p>
     </div>
 
     <div class="slut" id="slut" hidden>
-      <h2>🌅 Dagens skörd</h2>
+      <h2 id="slut-rubrik">🌅 Dagens skörd</h2>
       <div class="rader" id="slut-rader"></div>
       <div class="poang" id="slut-poang"></div>
+      <div class="stat" id="slut-stat"></div>
       <div class="knappar">
         <button class="knapp primar" id="btn-dela">📋 Dela resultat</button>
         <button class="knapp" id="btn-till-riket">Till riket →</button>
       </div>
-      <p class="hint">Ny mark väntar imorgon.</p>
+      <p class="hint" id="nedrakning"></p>
     </div>
   </section>
 
@@ -276,9 +280,8 @@ nav button[aria-pressed="true"]{opacity:1;color:var(--vete2)}
     </div>
     <div class="borta" id="borta" hidden></div>
     <div id="byggnader"></div>
-    <a class="stod" id="stod" hidden target="_blank" rel="noopener">☕ Gillar du Pusselriket? Stöd bygget!</a>
-    <p class="rike-fot">Riket arbetar medan du är borta (upp till 12 timmar).<br>
-    Trä, mat och sten skördar du i dagens pussel.</p>
+    <a class="stod" id="stod" hidden target="_blank" rel="noopener">☕</a>
+    <p class="rike-fot" id="rike-fot"></p>
   </section>
 </main>
 
@@ -289,16 +292,16 @@ nav button[aria-pressed="true"]{opacity:1;color:var(--vete2)}
 
 <div id="hjalp" hidden>
   <div class="hjalp-kort">
-    <h2>Så spelar du 🏰</h2>
-    <p>🧩 Varje dag får hela världen <b>samma mark och samma bitar</b>. Packa in så många du kan — fulla rader och kolumner ger extra guld.</p>
-    <p>👆 <b>Tryck</b> på biten för att rotera den · <b>dra</b> ut den på marken för att bygga.</p>
-    <p>🌾 Skörden blir trä, mat, sten och guld som bygger ditt rike — och riket arbetar vidare <b>medan du är borta</b>.</p>
-    <p>🔥 Kom tillbaka imorgon: ny mark åt alla, och din svit växer.</p>
+    <h2 id="hjalp-rubrik">Så spelar du 🏰</h2>
+    <p id="hjalp-1"></p>
+    <p id="hjalp-2"></p>
+    <p id="hjalp-3"></p>
+    <p id="hjalp-4"></p>
     <div class="knappar"><button class="knapp primar" id="btn-hjalp-stang">Till dagens mark →</button></div>
   </div>
 </div>
 
-<noscript><p style="text-align:center;padding:20px">Pusselriket behöver JavaScript för att fungera.</p></noscript>
+<noscript><p style="text-align:center;padding:20px">Pusselriket behöver JavaScript. / Pusselriket needs JavaScript.</p></noscript>
 
 <div id="toast" role="status"></div>
 
@@ -318,12 +321,13 @@ const GULD_PER_HUS = 3;              // guld per husruta
 const GULD_PER_LINJE = 2;            // guld per full rad/kolumn
 const OFFLINE_TAK_MIN = 12 * 60;     // max offlineskörd i minuter
 const STOD_URL = 'https://ko-fi.com/mattias01'; // donationslänk — tom sträng döljer knappen i riket
+const SPEL_URL = 'https://mattesj01.github.io/pusselriket/';
 
 const BYGGNADER = {
-  torp:  {emoji:'🏡', namn:'Torp',      rate:1,  bas:{tra:8, mat:6},            guldBas:0},
-  bageri:{emoji:'🍞', namn:'Bageri',    rate:2,  bas:{mat:14, tra:6},           guldBas:30},
-  brott: {emoji:'⛏️', namn:'Stenbrott', rate:3,  bas:{sten:12, tra:8},          guldBas:60},
-  slott: {emoji:'🏰', namn:'Slott',     rate:10, bas:{tra:18, mat:18, sten:18}, guldBas:400},
+  torp:  {emoji:'🏡', namn:{sv:'Torp',      en:'Cottage'}, rate:1,  bas:{tra:8, mat:6},            guldBas:0},
+  bageri:{emoji:'🍞', namn:{sv:'Bageri',    en:'Bakery'},  rate:2,  bas:{mat:14, tra:6},           guldBas:30},
+  brott: {emoji:'⛏️', namn:{sv:'Stenbrott', en:'Quarry'},  rate:3,  bas:{sten:12, tra:8},          guldBas:60},
+  slott: {emoji:'🏰', namn:{sv:'Slott',     en:'Castle'},  rate:10, bas:{tra:18, mat:18, sten:18}, guldBas:400},
 };
 const KOSTNAD_VAXT = 1.6, GULD_VAXT = 1.9;
 
@@ -342,13 +346,90 @@ const FORMER = [
   [[0,1],[1,1],[2,1],[2,0]],
 ];
 const TYPER = {
-  s:{namn:'Skog',  em:'🌲', resurs:'tra'},
-  a:{namn:'Åker',  em:'🌾', resurs:'mat'},
-  g:{namn:'Gruva', em:'🪨', resurs:'sten'},
-  h:{namn:'By',    em:'🏠', resurs:null},   // ger guld direkt
+  s:{namn:{sv:'Skog',  en:'Forest'},  em:'🌲', resurs:'tra'},
+  a:{namn:{sv:'Åker',  en:'Field'},   em:'🌾', resurs:'mat'},
+  g:{namn:{sv:'Gruva', en:'Mine'},    em:'🪨', resurs:'sten'},
+  h:{namn:{sv:'By',    en:'Village'}, em:'🏠', resurs:null},   // ger guld direkt
 };
 const RES_EM = {tra:'🌲', mat:'🌾', sten:'🪨'};
-const MANADER = ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
+
+/* ---------- all spelartext på båda språken ---------- */
+const TEXT = {
+  sv: {
+    titel: 'Pusselriket — dagens pussel bygger ditt rike',
+    manader: ['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'],
+    dagrad: (nr, d) => 'Dag ' + nr + ' · ' + d.getDate() + ' ' + TEXT.sv.manader[d.getMonth()],
+    svit: n => '🔥 ' + n + (n === 1 ? ' dag' : ' dagar') + ' i rad',
+    planTitel: 'Dagens mark — samma för alla',
+    hint: 'Tryck på biten för att rotera · dra ut den på marken',
+    rotera: '↻ Rotera', angra: '↶ Ångra', slang: '✕ Släng',
+    slutRubrik: '🌅 Dagens skörd',
+    dela: '📋 Dela resultat', tillRiket: 'Till riket →',
+    nyMarkOm: '🌅 Ny mark om',
+    flikPussel: 'Dagens pussel', flikRike: 'Riket',
+    rikeFot: 'Riket arbetar medan du är borta (upp till 12 timmar).<br>Trä, mat och sten skördar du i dagens pussel.',
+    hjalpRubrik: 'Så spelar du 🏰',
+    hjalp1: '🧩 Varje dag får hela världen <b>samma mark och samma bitar</b>. Packa in så många du kan — fulla rader och kolumner ger extra guld.',
+    hjalp2: '👆 <b>Tryck</b> på biten för att rotera den · <b>dra</b> ut den på marken för att bygga.',
+    hjalp3: '🌾 Skörden blir trä, mat, sten och guld som bygger ditt rike — och riket arbetar vidare <b>medan du är borta</b>.',
+    hjalp4: '🔥 Kom tillbaka imorgon: ny mark åt alla, och din svit växer.',
+    hjalpStang: 'Till dagens mark →',
+    stod: '☕ Gillar du Pusselriket? Stöd bygget!',
+    tomtAn: '🌲 🌿 🌲   här är det tomt än   🌲 🌿 🌲',
+    sedan: 'sedan', bit: 'bit', av: 'av',
+    guldMin: 'guld/min', perNiva: '💰/min per nivå', niva: 'nivå', nasta: 'Nästa:',
+    bygg: 'Bygg', uppgradera: 'Uppgradera',
+    notisHoppad: 'En bit fick inte plats och hoppades över.',
+    notisFarInte: 'Får inte plats där — stenar eller kanten i vägen.',
+    kopierat: 'Kopierat! Klistra in var du vill.',
+    kopieraFel: 'Kunde inte kopiera automatiskt.',
+    borta: (vinst, min) => '🌙 Medan du var borta: +' + vinst + ' 💰 (' + min + ' min)',
+    tra: 'trä', mat: 'mat', sten: 'sten', guld: 'guld',
+    fullaLinjer: 'fulla linjer', byar: 'byar',
+    utanPlats: n => n + (n === 1 ? ' bit fick' : ' bitar fick') + ' inte plats',
+    poang: 'poäng', delaDag: 'dag',
+    statRad: st => '📅 ' + st.spelade + ' spelade dagar · ⭐ bästa ' + st.basta + ' · 🔥 längsta svit ' + st.bastaSvit,
+    ariaPlan: 'Spelplan, 7 gånger 7 rutor', ariaRes: 'Dina resurser',
+  },
+  en: {
+    titel: 'Pusselriket — a daily puzzle builds your kingdom',
+    manader: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    dagrad: (nr, d) => 'Day ' + nr + ' · ' + TEXT.en.manader[d.getMonth()] + ' ' + d.getDate(),
+    svit: n => '🔥 ' + n + '-day streak',
+    planTitel: "Today's land — same for everyone",
+    hint: 'Tap the piece to rotate · drag it onto the land',
+    rotera: '↻ Rotate', angra: '↶ Undo', slang: '✕ Discard',
+    slutRubrik: "🌅 Today's harvest",
+    dela: '📋 Share result', tillRiket: 'To your kingdom →',
+    nyMarkOm: '🌅 New land in',
+    flikPussel: 'Daily puzzle', flikRike: 'Kingdom',
+    rikeFot: 'Your kingdom keeps working while you are away (up to 12 hours).<br>Harvest wood, food and stone in the daily puzzle.',
+    hjalpRubrik: 'How to play 🏰',
+    hjalp1: '🧩 Every day the whole world gets <b>the same land and the same pieces</b>. Fit in as many as you can — full rows and columns give bonus gold.',
+    hjalp2: '👆 <b>Tap</b> the piece to rotate it · <b>drag</b> it onto the land to build.',
+    hjalp3: '🌾 The harvest becomes wood, food, stone and gold that build your kingdom — and it keeps working <b>while you are away</b>.',
+    hjalp4: '🔥 Come back tomorrow: new land for everyone, and your streak grows.',
+    hjalpStang: "To today's land →",
+    stod: '☕ Enjoying Pusselriket? Support the build!',
+    tomtAn: '🌲 🌿 🌲   nothing here yet   🌲 🌿 🌲',
+    sedan: 'next', bit: 'piece', av: 'of',
+    guldMin: 'gold/min', perNiva: '💰/min per level', niva: 'level', nasta: 'Next:',
+    bygg: 'Build', uppgradera: 'Upgrade',
+    notisHoppad: "A piece didn't fit anywhere and was skipped.",
+    notisFarInte: "Doesn't fit there — rocks or the edge are in the way.",
+    kopierat: 'Copied! Paste it anywhere.',
+    kopieraFel: "Couldn't copy automatically.",
+    borta: (vinst, min) => '🌙 While you were away: +' + vinst + ' 💰 (' + min + ' min)',
+    tra: 'wood', mat: 'food', sten: 'stone', guld: 'gold',
+    fullaLinjer: 'full lines', byar: 'villages',
+    utanPlats: n => n + (n === 1 ? " piece didn't" : " pieces didn't") + ' fit',
+    poang: 'points', delaDag: 'day',
+    statRad: st => '📅 ' + st.spelade + ' days played · ⭐ best ' + st.basta + ' · 🔥 longest streak ' + st.bastaSvit,
+    ariaPlan: 'Game board, 7 by 7 squares', ariaRes: 'Your resources',
+  },
+};
+function sprak(){ return (S && S.sprak) || 'sv'; }
+function t(nyckel){ return TEXT[sprak()][nyckel]; }
 
 /* ---------- fröad slump: samma datum ⇒ samma pussel för alla ---------- */
 function xmur3(str){
@@ -382,6 +463,11 @@ function dagNummer(datum){
 function gardagStr(datum){
   const d = new Date(Date.parse(datum) - 86400000);
   return d.toISOString().slice(0,10);
+}
+function formatTid(ms){
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const p = n => String(n).padStart(2, '0');
+  return p(Math.floor(s / 3600)) + ':' + p(Math.floor(s / 60) % 60) + ':' + p(s % 60);
 }
 
 /* ---------- dagens pussel ur fröet ---------- */
@@ -454,6 +540,7 @@ let S; // hela speltillståndet
 function nyttRike(){
   // startförråd: dag 1 ska alltid räcka till första torpet
   return {guld:0, res:{tra:5, mat:5, sten:5}, byggnader:{torp:0, bageri:0, brott:0, slott:0},
+          stat:{spelade:0, basta:0, bastaSvit:0, total:0},
           lastSeen:Date.now(), streak:0, senastSpelad:null};
 }
 function nyDag(datum){
@@ -466,6 +553,8 @@ function ladda(){
   let sparat = null;
   try { sparat = JSON.parse(localStorage.getItem(NYCKEL)); } catch(e){}
   S = sparat && sparat.v === 1 ? sparat : {v:1, rike:nyttRike(), dag:null};
+  if (!S.sprak) S.sprak = ((navigator.language || '') + '').toLowerCase().startsWith('sv') ? 'sv' : 'en';
+  if (!S.rike.stat) S.rike.stat = {spelade:0, basta:0, bastaSvit:0, total:0}; // äldre sparfiler
   const idag = idagStr();
   if (!S.dag || S.dag.datum !== idag){
     if (S.rike.senastSpelad && S.rike.senastSpelad !== idag && S.rike.senastSpelad !== gardagStr(idag)){
@@ -501,7 +590,7 @@ function uppgradera(k){
   for (const [r,v] of Object.entries(p.res)) S.rike.res[r] -= v;
   S.rike.byggnader[k]++;
   spara(); ritaAllt();
-  toast(BYGGNADER[k].emoji + ' ' + BYGGNADER[k].namn + ' → nivå ' + S.rike.byggnader[k]);
+  toast(BYGGNADER[k].emoji + ' ' + BYGGNADER[k].namn[sprak()] + ' → ' + t('niva') + ' ' + S.rike.byggnader[k]);
 }
 function offlineSkord(){
   const min = Math.min((Date.now() - S.rike.lastSeen) / 60000, OFFLINE_TAK_MIN);
@@ -511,7 +600,7 @@ function offlineSkord(){
     S.rike.guld += vinst;
     const el = document.getElementById('borta');
     el.hidden = false;
-    el.textContent = '🌙 Medan du var borta: +' + vinst + ' 💰 (' + Math.floor(min) + ' min)';
+    el.textContent = t('borta')(vinst, Math.floor(min));
   }
 }
 
@@ -553,8 +642,8 @@ function ritaBricka(){
     const kort = document.createElement('div');
     kort.className = 'bit-kort ' + (i === S.dag.idx ? 'aktuell' : 'nasta');
     kort.innerHTML = '<span class="rubrik">' + (i === S.dag.idx
-      ? TYPER[bit.typ].em + ' ' + TYPER[bit.typ].namn
-      : 'sedan') + '</span>';
+      ? TYPER[bit.typ].em + ' ' + TYPER[bit.typ].namn[sprak()]
+      : t('sedan')) + '</span>';
     const f = i === S.dag.idx ? formVid(bit) : FORMER[bit.form];
     const maxR = Math.max(...f.map(c=>c[0])) + 1, maxC = Math.max(...f.map(c=>c[1])) + 1;
     const grid = document.createElement('div');
@@ -572,7 +661,7 @@ function ritaBricka(){
       kort.id = 'aktuell-bit';
       const antal = document.createElement('span');
       antal.className = 'rubrik';
-      antal.textContent = 'bit ' + (i + 1) + ' av ' + S.dag.bitar.length;
+      antal.textContent = t('bit') + ' ' + (i + 1) + ' ' + t('av') + ' ' + S.dag.bitar.length;
       kort.appendChild(antal);
     }
     b.appendChild(kort);
@@ -584,14 +673,14 @@ function ritaResurser(){
   $('r-sten').textContent = S.rike.res.sten;
   $('r-guld').textContent = Math.floor(S.rike.guld);
   $('guld-stor').textContent = Math.floor(S.rike.guld);
-  $('guld-takt').textContent = '+' + guldPerMin() + ' guld/min';
+  $('guld-takt').textContent = '+' + guldPerMin() + ' ' + t('guldMin');
 }
 function ritaRike(){
   const delar = ['🌲'];
   for (const [k, lvl] of Object.entries(S.rike.byggnader))
     for (let i = 0; i < Math.min(lvl, 6); i++) delar.push(BYGGNADER[k].emoji);
   delar.push('🌲');
-  $('scen').textContent = delar.length > 2 ? delar.join(' ') : '🌲 🌿 🌲   här är det tomt än   🌲 🌿 🌲';
+  $('scen').textContent = delar.length > 2 ? delar.join(' ') : t('tomtAn');
 
   const wrap = $('byggnader');
   wrap.innerHTML = '';
@@ -604,12 +693,12 @@ function ritaRike(){
     if (p.guld > 0) bitar.push('<span class="' + (S.rike.guld < p.guld ? 'saknas' : '') + '">💰 ' + p.guld + '</span>');
     kort.innerHTML =
       '<div class="ikon">' + b.emoji + '</div>' +
-      '<div class="info"><div class="namn">' + b.namn + ' · nivå ' + lvl + '</div>' +
-      '<div class="meta">+' + b.rate + ' 💰/min per nivå</div>' +
-      '<div class="kostnad">Nästa: ' + bitar.join(' · ') + '</div></div>';
+      '<div class="info"><div class="namn">' + b.namn[sprak()] + ' · ' + t('niva') + ' ' + lvl + '</div>' +
+      '<div class="meta">+' + b.rate + ' ' + t('perNiva') + '</div>' +
+      '<div class="kostnad">' + t('nasta') + ' ' + bitar.join(' · ') + '</div></div>';
     const kn = document.createElement('button');
     kn.className = 'knapp primar';
-    kn.textContent = lvl === 0 ? 'Bygg' : 'Uppgradera';
+    kn.textContent = lvl === 0 ? t('bygg') : t('uppgradera');
     kn.disabled = !harRad(k);
     kn.addEventListener('click', () => uppgradera(k));
     kort.appendChild(kn);
@@ -618,10 +707,14 @@ function ritaRike(){
   $('rike-badge').hidden = !Object.keys(BYGGNADER).some(harRad);
 }
 function ritaHuvud(){
-  const nr = dagNummer(S.dag.datum);
-  const d = new Date();
-  $('dagrad').textContent = 'Dag ' + nr + ' · ' + d.getDate() + ' ' + MANADER[d.getMonth()];
-  $('streak').textContent = '🔥 ' + S.rike.streak + (S.rike.streak === 1 ? ' dag' : ' dagar') + ' i rad';
+  $('dagrad').textContent = t('dagrad')(dagNummer(S.dag.datum), new Date());
+  $('streak').textContent = t('svit')(S.rike.streak);
+}
+function ritaNedrakning(){
+  if (!S.dag.klar) return;
+  const nu = new Date();
+  const midnatt = new Date(nu.getFullYear(), nu.getMonth(), nu.getDate() + 1);
+  $('nedrakning').textContent = t('nyMarkOm') + ' ' + formatTid(midnatt - nu);
 }
 function ritaSpelSlut(){
   $('spel-ui').style.display = S.dag.klar ? 'none' : '';
@@ -629,13 +722,38 @@ function ritaSpelSlut(){
   if (S.dag.klar && S.dag.skord){
     const sk = S.dag.skord;
     $('slut-rader').innerHTML =
-      '🌲 ' + sk.tra + ' trä · 🌾 ' + sk.mat + ' mat · 🪨 ' + sk.sten + ' sten<br>' +
-      '💰 ' + sk.guld + ' guld (' + sk.linjer + ' fulla linjer' + (sk.hus ? ', byar' : '') + ')' +
-      (S.dag.hoppade ? '<br><small>' + S.dag.hoppade + ' bitar fick inte plats</small>' : '');
-    $('slut-poang').textContent = '⭐ ' + sk.poang + ' poäng';
+      '🌲 ' + sk.tra + ' ' + t('tra') + ' · 🌾 ' + sk.mat + ' ' + t('mat') + ' · 🪨 ' + sk.sten + ' ' + t('sten') + '<br>' +
+      '💰 ' + sk.guld + ' ' + t('guld') + ' (' + sk.linjer + ' ' + t('fullaLinjer') + (sk.hus ? ', ' + t('byar') : '') + ')' +
+      (S.dag.hoppade ? '<br><small>' + t('utanPlats')(S.dag.hoppade) + '</small>' : '');
+    $('slut-poang').textContent = '⭐ ' + sk.poang + ' ' + t('poang');
+    $('slut-stat').textContent = t('statRad')(S.rike.stat);
+    ritaNedrakning();
   }
-  $('slang-kvar').textContent = S.dag.slangKvar;
+  $('btn-slang').textContent = t('slang') + ' (' + S.dag.slangKvar + ')';
   $('btn-slang').disabled = S.dag.slangKvar <= 0;
+  $('btn-angra').disabled = !angraSnap;
+}
+function oversattUI(){
+  document.title = t('titel');
+  document.documentElement.lang = sprak();
+  $('plan-titel').textContent = t('planTitel');
+  $('plan').setAttribute('aria-label', t('ariaPlan'));
+  $('resurser').setAttribute('aria-label', t('ariaRes'));
+  $('hint-rad').textContent = t('hint');
+  $('btn-rotera').textContent = t('rotera');
+  $('btn-angra').textContent = t('angra');
+  $('slut-rubrik').textContent = t('slutRubrik');
+  $('btn-dela').textContent = t('dela');
+  $('btn-till-riket').textContent = t('tillRiket');
+  $('rike-fot').innerHTML = t('rikeFot');
+  $('flik-pussel').innerHTML = '<span class="em">🧩</span>' + t('flikPussel');
+  $('flik-rike').innerHTML = '<span class="em">🏰</span>' + t('flikRike') + '<span class="badge" id="rike-badge" hidden>!</span>';
+  $('hjalp-rubrik').textContent = t('hjalpRubrik');
+  for (let i = 1; i <= 4; i++) $('hjalp-' + i).innerHTML = t('hjalp' + i);
+  $('btn-hjalp-stang').textContent = t('hjalpStang');
+  $('btn-hjalp').setAttribute('aria-label', t('hjalpRubrik'));
+  $('stod').textContent = t('stod');
+  $('btn-sprak').textContent = sprak() === 'sv' ? 'EN' : 'SV';
 }
 function ritaAllt(){
   ritaPlan(null); ritaBricka(); ritaResurser(); ritaRike(); ritaHuvud(); ritaSpelSlut();
@@ -652,11 +770,12 @@ function toast(text){
   toastTimer = setTimeout(() => t.classList.remove('syns'), 2600);
 }
 
+let angraSnap = null; // en nivås ångra: ögonblicksbild av S.dag före senaste draget
 function nastaBit(){
   // hoppa automatiskt över bitar som inte får plats någonstans
   while (S.dag.idx < S.dag.bitar.length && !farPlatsNagonstans(S.dag.plan, aktuellBit())){
     S.dag.idx++; S.dag.hoppade++;
-    notis('En bit fick inte plats och hoppades över.');
+    notis(t('notisHoppad'));
   }
   if (S.dag.idx >= S.dag.bitar.length) avslutaDag();
 }
@@ -664,6 +783,7 @@ function placera(ar, ac){
   const bit = aktuellBit();
   const f = formVid(bit);
   if (!kanPlacera(S.dag.plan, f, ar, ac)) return false;
+  angraSnap = JSON.stringify(S.dag);
   f.forEach(([r,c]) => S.dag.plan[(ar + r) * PLAN_N + (ac + c)] = bit.typ);
   S.dag.idx++;
   notis('');
@@ -673,9 +793,17 @@ function placera(ar, ac){
 }
 function slang(){
   if (S.dag.klar || S.dag.slangKvar <= 0) return;
+  angraSnap = JSON.stringify(S.dag);
   S.dag.slangKvar--;
   S.dag.idx++;
   nastaBit();
+  spara(); ritaAllt();
+}
+function angra(){
+  if (!angraSnap || S.dag.klar) return;
+  S.dag = JSON.parse(angraSnap);
+  angraSnap = null;
+  notis('');
   spara(); ritaAllt();
 }
 function roteraAktuell(){
@@ -703,6 +831,11 @@ function avslutaDag(){
   const idag = S.dag.datum;
   S.rike.streak = S.rike.senastSpelad === gardagStr(idag) ? S.rike.streak + 1 : 1;
   S.rike.senastSpelad = idag;
+  const st = S.rike.stat;
+  st.spelade++; st.total += sk.poang;
+  st.basta = Math.max(st.basta, sk.poang);
+  st.bastaSvit = Math.max(st.bastaSvit, S.rike.streak);
+  angraSnap = null; // en avslutad dag kan inte ångras
   spara();
 }
 
@@ -715,16 +848,16 @@ function delaText(){
     rutor += '\n';
   }
   const sk = S.dag.skord;
-  return 'Pusselriket dag ' + dagNummer(S.dag.datum) + ' 🏰\n⭐ ' + sk.poang +
-    ' poäng · 🔥 ' + S.rike.streak + ' i rad\n' + rutor;
+  return 'Pusselriket ' + t('delaDag') + ' ' + dagNummer(S.dag.datum) + ' 🏰\n⭐ ' + sk.poang +
+    ' ' + t('poang') + ' · ' + t('svit')(S.rike.streak) + '\n' + rutor + SPEL_URL;
 }
 async function dela(){
   const text = delaText();
   try {
     if (navigator.share){ await navigator.share({text}); return; }
   } catch(e){ if (e.name === 'AbortError') return; }
-  try { await navigator.clipboard.writeText(text); toast('Kopierat! Klistra in var du vill.'); }
-  catch(e){ toast('Kunde inte kopiera automatiskt.'); }
+  try { await navigator.clipboard.writeText(text); toast(t('kopierat')); }
+  catch(e){ toast(t('kopieraFel')); }
 }
 
 /* ---------- pekare: dra biten till marken (eller hovra + klicka) ---------- */
@@ -774,7 +907,7 @@ function kopplaPekare(){
       if (g && g.ok){ placera(g.ar, g.ac); return; }
       ritaPlan(null);
       if (!flyttad) roteraAktuell();            // tryck utan drag = rotera
-      else if (g && !g.ok) notis('Får inte plats där — stenar eller kanten i vägen.');
+      else if (g && !g.ok) notis(t('notisFarInte'));
     }
   });
   // mus: hovra över planen för förhandsvisning, klicka för att placera
@@ -787,7 +920,7 @@ function kopplaPekare(){
     if (drag || S.dag.klar || e.pointerType !== 'mouse') return;
     const g = ghostVid(e.clientX, e.clientY, false);
     if (g && g.ok) placera(g.ar, g.ac);
-    else notis('Får inte plats där — stenar eller kanten i vägen.');
+    else notis(t('notisFarInte'));
   });
 }
 
@@ -802,23 +935,29 @@ function visaVy(vilken){
 /* ---------- självtest: öppna sidan med #test och läs konsolen ---------- */
 function sjalvtest(){
   const ok = [], fel = [];
-  const t = (namn, sant) => (sant ? ok : fel).push(namn);
+  const koll = (namn, sant) => (sant ? ok : fel).push(namn);
   const a = genereraDag('2026-07-06'), b = genereraDag('2026-07-06'), c = genereraDag('2026-07-07');
-  t('determinism: samma datum ⇒ samma pussel', JSON.stringify(a) === JSON.stringify(b));
-  t('olika datum ⇒ olika pussel', JSON.stringify(a) !== JSON.stringify(c));
-  t('rätt antal block och bitar', a.block.length === ANTAL_BLOCK && a.bitar.length === ANTAL_BITAR);
+  koll('determinism: samma datum ⇒ samma pussel', JSON.stringify(a) === JSON.stringify(b));
+  koll('olika datum ⇒ olika pussel', JSON.stringify(a) !== JSON.stringify(c));
+  koll('rätt antal block och bitar', a.block.length === ANTAL_BLOCK && a.bitar.length === ANTAL_BITAR);
   let f = FORMER[6];
   for (let i = 0; i < 4; i++) f = rotera(f);
-  t('4 rotationer ⇒ ursprungsformen', JSON.stringify(f) === JSON.stringify([...FORMER[6]].sort((p,q)=>p[0]-q[0]||p[1]-q[1])));
+  koll('4 rotationer ⇒ ursprungsformen', JSON.stringify(f) === JSON.stringify([...FORMER[6]].sort((p,q)=>p[0]-q[0]||p[1]-q[1])));
   const plan = Array(49).fill('.');
   plan[0] = 'X';
-  t('kanPlacera: nekar blockerad ruta', !kanPlacera(plan, [[0,0],[0,1]], 0, 0));
-  t('kanPlacera: nekar utanför kanten', !kanPlacera(plan, [[0,0],[0,1]], 0, 6));
-  t('kanPlacera: godkänner ledig plats', kanPlacera(plan, [[0,0],[0,1]], 1, 0));
+  koll('kanPlacera: nekar blockerad ruta', !kanPlacera(plan, [[0,0],[0,1]], 0, 0));
+  koll('kanPlacera: nekar utanför kanten', !kanPlacera(plan, [[0,0],[0,1]], 0, 6));
+  koll('kanPlacera: godkänner ledig plats', kanPlacera(plan, [[0,0],[0,1]], 1, 0));
   const full = Array(49).fill('s');
   full[8] = '.';
-  t('raknaLinjer: 12 av 14 när en ruta saknas', raknaLinjer(full) === 12);
-  t('offline-tak: 48h räknas som 12h', Math.min(48 * 60, OFFLINE_TAK_MIN) === 720);
+  koll('raknaLinjer: 12 av 14 när en ruta saknas', raknaLinjer(full) === 12);
+  koll('offline-tak: 48h räknas som 12h', Math.min(48 * 60, OFFLINE_TAK_MIN) === 720);
+  koll('i18n: samma nycklar i sv och en',
+    JSON.stringify(Object.keys(TEXT.sv).sort()) === JSON.stringify(Object.keys(TEXT.en).sort()));
+  koll('i18n: typer och byggnader har båda språken',
+    Object.values(TYPER).every(x => x.namn.sv && x.namn.en) &&
+    Object.values(BYGGNADER).every(x => x.namn.sv && x.namn.en));
+  koll('formatTid: 3661 s ⇒ 01:01:01', formatTid(3661000) === '01:01:01');
   console.log('SJÄLVTEST: ' + ok.length + '/' + (ok.length + fel.length) + ' OK' +
     (fel.length ? ' — FEL: ' + fel.join(', ') : ''));
   return fel.length === 0;
@@ -832,17 +971,24 @@ function start(){
   offlineSkord();
   kopplaPekare();
   nastaBit();          // ifall första biten inte får plats
+  oversattUI();
   ritaAllt();
   visaVy(S.dag.klar ? 'rike' : 'pussel');
   $('btn-rotera').addEventListener('click', roteraAktuell);
+  $('btn-angra').addEventListener('click', angra);
   $('btn-slang').addEventListener('click', slang);
   $('btn-dela').addEventListener('click', dela);
   $('btn-till-riket').addEventListener('click', () => visaVy('rike'));
   $('flik-pussel').addEventListener('click', () => visaVy('pussel'));
   $('flik-rike').addEventListener('click', () => visaVy('rike'));
+  $('btn-sprak').addEventListener('click', () => {
+    S.sprak = sprak() === 'sv' ? 'en' : 'sv';
+    spara(); oversattUI(); ritaAllt();
+  });
   setInterval(() => {
     S.rike.guld += guldPerMin() / 60;
     ritaResurser();
+    ritaNedrakning();
     if (idagStr() !== S.dag.datum) location.reload(); // ny dag ⇒ ny mark
   }, 1000);
   setInterval(spara, 15000);

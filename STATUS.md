@@ -114,6 +114,14 @@ Källor: [Mergest Kingdom på CrazyGames](https://www.crazygames.com/game/merges
 - **Stödknapp** ("☕ Gillar du Pusselriket? Stöd bygget!") i riksvyn, styrd av
   konstanten `STOD_URL` överst i filen — tom sträng döljer den. Klistra in en
   Ko-fi/itch-länk så syns den. Grunden för donationsintäkter.
+- **Två språk (nytt 2026-07-07):** all spelartext ligger i ordboken `TEXT`
+  (sv + en) — spelet väljer språk efter `navigator.language` (svenska ⇒ svenska,
+  allt annat ⇒ engelska), och SV/EN-knappen i sidhuvudet växlar manuellt. Valet
+  sparas. Självtestet kontrollerar att båda språken har exakt samma nycklar.
+- **Nya funktioner (2026-07-07):** ↶ Ångra (en nivå — ångrar senaste placering/
+  släng, aldrig en avslutad dag), statistikrad på resultatkortet (spelade dagar,
+  bästa poäng, längsta svit; sparas i `S.rike.stat`), nedräkning till nästa dags
+  mark på resultatkortet, och delningstexten avslutas nu med spellänken.
 
 ### Publiceringspaketet (nytt 2026-07-07)
 
