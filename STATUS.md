@@ -187,8 +187,12 @@ spelare, stödknapp som intäktsgrund, zip redo för uppladdning.
 
 **Därefter (kräver ditt OK eller din medverkan):**
 
-6b. **Publicera online** — GitHub Pages (gh är inloggat som Mattesj01, kan ske
-   direkt) och/eller itch.io (zip:en är klar; ger publik + inbyggda donationer).
+6b. **Publicera online — KLART 2026-07-07.** Spelet är LIVE på
+   **https://mattesj01.github.io/pusselriket/** (repo: github.com/Mattesj01/pusselriket,
+   GitHub Pages på main). Verifierat mot den publika adressen: HTTP 200, självtest
+   9/9, alla PWA-filer serveras, skärmdump ser rätt ut. Uppdatera spelet =
+   committa + `git push` → live inom ~1 minut. Kvar: itch.io-uppladdning
+   (användarens konto) och Ko-fi-länk i `STOD_URL` (väntar på användarens adress).
 6c. **Intäktsmodell** — donationslänk i `STOD_URL` (Ko-fi/itch) är byggd och klar;
    annonser är realistiska först i mobilappen (AdMob via Capacitor) eller via
    spelportaler (Poki/CrazyGames tar emot spel och delar annonsintäkt).
