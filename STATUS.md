@@ -191,8 +191,9 @@ spelare, stödknapp som intäktsgrund, zip redo för uppladdning.
    **https://mattesj01.github.io/pusselriket/** (repo: github.com/Mattesj01/pusselriket,
    GitHub Pages på main). Verifierat mot den publika adressen: HTTP 200, självtest
    9/9, alla PWA-filer serveras, skärmdump ser rätt ut. Uppdatera spelet =
-   committa + `git push` → live inom ~1 minut. Kvar: itch.io-uppladdning
-   (användarens konto) och Ko-fi-länk i `STOD_URL` (väntar på användarens adress).
+   committa + `git push` → live inom ~1 minut. Donationsknappen är AKTIV sedan
+   2026-07-07: `STOD_URL = https://ko-fi.com/mattias01`. Kvar: itch.io-uppladdning
+   (användarens konto; `pusselriket-webb.zip` innehåller allt inkl. Ko-fi-knappen).
 6c. **Intäktsmodell** — donationslänk i `STOD_URL` (Ko-fi/itch) är byggd och klar;
    annonser är realistiska först i mobilappen (AdMob via Capacitor) eller via
    spelportaler (Poki/CrazyGames tar emot spel och delar annonsintäkt).
